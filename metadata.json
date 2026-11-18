@@ -1,0 +1,6 @@
+{
+  "name": "Kenang",
+  "description": "Aplikasi web untuk menyimpan dan mengunduh foto serta video, menyampaikan pesan kata dan pesan suara personal, membuat acara dengan notifikasi real-time, serta melacak lokasi bersama.",
+  "requestFramePermissions": ["geolocation", "microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
