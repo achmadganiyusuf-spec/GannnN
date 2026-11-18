@@ -5,7 +5,6 @@ import http from 'node:http';
 import path from 'node:path';
 import express from 'express';
 import multer from 'multer';
-import { createServer as createViteServer } from 'vite';
 import { WebSocket, WebSocketServer } from 'ws';
 import type {
   AppStateSnapshot,
@@ -18,8 +17,8 @@ import type {
   ServerWSMessage,
   SharedEvent,
   VoiceMessage,
-} from './src/types/app';
-import { formatIndonesianDate } from './src/utils/format';
+} from './src/types/app.ts';
+import { formatIndonesianDate } from './src/utils/format.ts';
 
 const PORT = Number(process.env.PORT || 3000);
 const ROOT_DIR = process.cwd();
@@ -451,7 +450,10 @@ async function startServer() {
     if (item.url.startsWith('/uploads/')) {
       diskPath = path.resolve(UPLOADS_DIR, item.url.replace('/uploads/', ''));
     } else if (item.url.startsWith('/src/')) {
-      diskPath = path.resolve(ROOT_DIR, item.url.slice(1));
+      const rel = item.url.slice(1);
+      const rootCandidate = path.resolve(ROOT_DIR, rel);
+      const distCandidate = path.resolve(ROOT_DIR, 'dist', rel);
+      diskPath = fs.existsSync(rootCandidate) ? rootCandidate : distCandidate;
     }
 
     if (!diskPath || !fs.existsSync(diskPath)) {
@@ -798,6 +800,7 @@ async function startServer() {
 
   // Vite dev middleware or static dist serving
   if (process.env.NODE_ENV !== 'production') {
+    const { createServer: createViteServer } = await import('vite');
     const vite = await createViteServer({
       server: {
         middlewareMode: true,
